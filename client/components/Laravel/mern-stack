@@ -1,0 +1,150 @@
+// Template for each page
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import FriendsMarquee from "../components/FriendsMarquee";
+import HeroSection from "../components/Laravel/HeroSection";
+import ServicesSection from "../components/Laravel/ServicesSection";
+import IndustriesSection from "../components/Laravel/IndustriesSection";
+import CaseStudiesSection from "../components/Laravel/CaseStudiesSection";
+import ContactSection from "../components/Laravel/ContactSection";
+import LanguageServicesSection from "@/components/Laravel/LanguageServicesSection";
+import FAQ from "../components/FAQ";
+import { faqData } from "../data/faqData";
+import ConversationSection from "../components/ConversationSection";
+import Footer from "../components/Footer";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function PageName() {
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    return () => {
+      gsap.killTweensOf("*");
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  const handleButtonHover = () => {
+    if (overlayRef.current) {
+      gsap.to(overlayRef.current, {
+        width: "100%",
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    }
+  };
+
+  const handleButtonLeave = () => {
+    if (overlayRef.current) {
+      const isSmallScreen = window.innerWidth < 640;
+      const initialWidth = isSmallScreen
+        ? "55px"
+        : window.innerWidth < 1024
+          ? "60px"
+          : "68px";
+      gsap.to(overlayRef.current, {
+        width: initialWidth,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    }
+  };
+
+  type ServiceItem = {
+    title: string;
+    description: string;
+  };
+  const serviceItems: ServiceItem[] = [
+    {
+      title: "Custom API & Third-Party Integrations",
+      description:
+        "We develop creative and secure RESTful and GraphQL APIs for uninterrupted communication between systems, applications, and services.",
+    },
+    {
+      title: "Admin Dashboard & Analytics",
+      description:
+        "We develop dynamic, user-friendly admin dashboards. Gain full control of your operations with our role-based access control (RBAC) functionality.",
+    },
+    {
+      title: "Real Time Functionalities & Notification Features",
+      description:
+        "We utilize WebSockets and event broadcasting to implement real-time features, including order tracking, live chat, and notification centers.",
+    },
+    {
+      title: "Robust Architecture & DevOps",
+      description:
+        "Build websites with high-performance architectures—supporting multiple operations, modular monoliths, and micro services. Our CI/CD pipelines, automated testing, Docker support boost your products' efficiency and productivity.",
+    },
+    {
+      title: "API-First Architecture & Microservices",
+      description:
+        "We are experts at building RESTful APIs, fostering easy integration and seamless multi-platform support.",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#040404] text-white relative overflow-y-hidden font-montserrat">
+      {/* Hero Section */}
+      <HeroSection
+        onButtonHover={handleButtonHover}
+        onButtonLeave={handleButtonLeave}
+        imageSrc="/WP/placeholder.svg"
+        title={{ lines: ["EXPAND YOUR DIGITAL EXISTENCE", "WITH TECHNOLOGY-POWERED", "WEBSITES & APPS"] }}
+      />
+
+      {/* Technologies We Use Section */}
+      <FriendsMarquee title="Technologies We Use" />
+
+      {/* What Makes Our Services Stand Out Section */}
+      <ServicesSection />
+
+      {/* Industries We Cover Section */}
+      <IndustriesSection />
+
+      <LanguageServicesSection
+        sectionTitle={{
+          mainText:
+            "Explore What Else We Offer In Development Services",
+          highlightedWords: [
+            { text: "Else", position: "after" },
+            { text: "hat", position: "after" },
+            { text: "In", position: "after" },
+            { text: "ment", position: "after" },
+          ],
+        }}
+        serviceItems={serviceItems}
+        backgroundColor="#040404"
+        accentColor="#AB322C"
+        mainTextColor="white"
+      />
+
+      {/* Top Case Studies Section */}
+      <CaseStudiesSection />
+
+      {/* Contact Form Section */}
+      <ContactSection />
+
+      <FAQ faqData={faqData} />
+
+      <ConversationSection
+        title="Kick Start Your Digital Journey With Our Services"
+        highlightedWords={[
+          { text: "With", position: "after" },
+          { text: "Our", position: "after" },
+          { text: "Services", position: "after" },
+        ]}
+        description="Looking to start a project or enhance your digital platform? Click the button and get connected with our experts to get valuable insights on your project."
+        buttonText="connect with experts"
+        backgroundColor="#040404"
+        textColor="white"
+        highlightColor="#AB322C"
+        buttonBackgroundColor="#AB322C"
+      />
+
+      {/* Footer Section */}
+      <Footer />
+    </div>
+  );
+}

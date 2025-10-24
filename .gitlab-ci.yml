@@ -1,0 +1,33 @@
+stages:
+    - staging
+    - production
+   
+staging_stage:
+    stage: staging
+    tags:
+        - vyalux-react
+    script: |
+        cd /var/www/vyalux-react
+        source ~/.bashrc
+        git checkout Staging
+        git pull origin Staging
+        npm install 
+        npm run build
+        pm2 restart vyalux-frontend  
+    rules:
+       - if: $CI_COMMIT_BRANCH == "Staging" && $CI_PIPELINE_SOURCE == "push"
+
+production_stage:
+    stage: production
+    tags:
+        - vyalux-react-production
+    script: |
+        cd /var/www/vyalux-react
+        source ~/.bashrc
+        git checkout main
+        git pull origin main
+        npm install 
+        npm run build
+        pm2 restart vyalux-production 
+    rules:
+       - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"

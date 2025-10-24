@@ -1,0 +1,1147 @@
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import FriendsMarquee from "../components/FriendsMarquee";
+import HeroSection from "../components/Laravel/HeroSection";
+import ServicesSection from "../components/Laravel/ServicesSection";
+import IndustriesSection from "../components/Laravel/IndustriesSection";
+import MernServicesSection from "../components/Laravel/MernServicesSection";
+import CaseStudiesSection from "../components/Laravel/CaseStudiesSection";
+import ContactSection from "../components/Laravel/ContactSection";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function Laravel() {
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Register any global animations or ScrollTriggers
+    
+    return () => {
+      // Cleanup all animations and ScrollTriggers when component unmounts
+      gsap.killTweensOf("*");
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+        opacity: 1,
+        y: 0,
+        scale: 1,
+      });
+
+      // Create sticky pin for left content (desktop only) - same as home page
+      const stickyTrigger = ScrollTrigger.create({
+        trigger: mernSection,
+        start: "top top",
+        end: "bottom bottom",
+        pin: window.innerWidth >= 1024 ? mernStickyContent : false,
+        pinSpacing: false,
+        invalidateOnRefresh: true,
+        refreshPriority: -1,
+      });
+
+      // Create controlled scroll with consolidated ScrollTrigger instances (same as home page)
+      const mernScrollTriggers = [];
+
+      mernServiceItems.forEach((item, index) => {
+        const itemTrigger = ScrollTrigger.create({
+          trigger: item,
+          start: "top 60%",
+          end: "bottom 40%",
+          invalidateOnRefresh: true,
+          onEnter: () => {
+            // Kill any existing animations for this item
+            gsap.killTweensOf(item);
+
+            // Smooth entrance when section enters viewport
+            gsap.fromTo(
+              item,
+              {
+                opacity: 0.7,
+                y: 30,
+                scale: 0.95,
+              },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1.02,
+                duration: 0.8,
+                ease: "power3.out",
+              },
+            );
+          },
+          onLeave: () => {
+            // Kill any existing animations for this item
+            gsap.killTweensOf(item);
+
+            // Gentle exit when leaving viewport
+            gsap.to(item, {
+              opacity: 0.8,
+              scale: 0.98,
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          },
+          onEnterBack: () => {
+            // Kill any existing animations for this item
+            gsap.killTweensOf(item);
+
+            // Re-entering from below
+            gsap.to(item, {
+              opacity: 1,
+              y: 0,
+              scale: 1.02,
+              duration: 0.6,
+              ease: "power2.out",
+            });
+          },
+          onLeaveBack: () => {
+            // Kill any existing animations for this item
+            gsap.killTweensOf(item);
+
+            // Leaving back to top
+            gsap.to(item, {
+              opacity: 0.7,
+              y: 30,
+              scale: 0.95,
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          },
+        });
+
+        mernScrollTriggers.push(itemTrigger);
+      });
+
+      // Mobile responsiveness adjustments (same as home page)
+      const refreshHandler = () => {
+        if (window.innerWidth < 1024) {
+          stickyTrigger.disable();
+        } else {
+          stickyTrigger.enable();
+        }
+      };
+
+      ScrollTrigger.addEventListener("refreshInit", refreshHandler);
+
+      // Store triggers for cleanup
+      mernScrollTriggers.push(stickyTrigger);
+    }
+
+    // Top Case Studies Section Animations (matching home page exactly)
+    const caseStudiesSection = document.querySelector(".case-studies-section");
+    const caseStudyCards = document.querySelectorAll(".case-study-card");
+
+    if (caseStudiesSection && caseStudyCards.length > 0) {
+      // Set initial states for all cards and their images
+      caseStudyCards.forEach((card) => {
+        const img = card.querySelector("img");
+        const logo = card.querySelector(
+          ".absolute.bottom-6, .absolute.bottom-8",
+        );
+        const overlay = card.querySelector(
+          ".absolute.inset-0.bg-gradient-to-t",
+        );
+
+        gsap.set(card, {
+          opacity: 0,
+          y: 60,
+          scale: 0.95,
+        });
+
+        if (img) {
+          gsap.set(img, {
+            scale: 1,
+          });
+        }
+
+        if (logo) {
+          gsap.set(logo, {
+            opacity: 0.75,
+          });
+        }
+
+        if (overlay) {
+          gsap.set(overlay, {
+            opacity: 1,
+          });
+        }
+      });
+
+      // Section entrance animation with ScrollTrigger
+      const caseStudiesTitle = document.querySelector(".case-studies-title h2");
+
+      const caseStudiesTrigger = ScrollTrigger.create({
+        trigger: caseStudiesSection,
+        start: "top 80%",
+        end: "bottom 20%",
+        onEnter: () => {
+          const tl = gsap.timeline();
+
+          // Title animation
+          if (caseStudiesTitle) {
+            tl.fromTo(
+              caseStudiesTitle,
+              {
+                opacity: 0,
+                y: 50,
+              },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power3.out",
+              },
+            );
+          }
+
+          // Staggered card entrance
+          tl.to(
+            caseStudyCards,
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.8,
+              stagger: {
+                amount: 0.6,
+                from: "start",
+              },
+              ease: "power3.out",
+            },
+            "-=0.4",
+          );
+        },
+      });
+
+      // Enhanced hover animations for each card
+      caseStudyCards.forEach((card, index) => {
+        const img = card.querySelector("img");
+        const logo = card.querySelector(
+          ".absolute.bottom-6, .absolute.bottom-8",
+        );
+        const overlay = card.querySelector(
+          ".absolute.inset-0.bg-gradient-to-t",
+        );
+        let isHovered = false;
+
+        // Mouse enter
+        card.addEventListener("mouseenter", () => {
+          if (isHovered) return;
+          isHovered = true;
+
+          // Kill any existing tweens
+          gsap.killTweensOf([card, img, logo, overlay]);
+
+          const tl = gsap.timeline();
+
+          // Card lift and scale
+          tl.to(card, {
+            y: -10,
+            scale: 1.02,
+            duration: 0.4,
+            ease: "power2.out",
+          });
+
+          // Image zoom in
+          if (img) {
+            tl.to(
+              img,
+              {
+                scale: 1.1,
+                duration: 0.8,
+                ease: "power3.out",
+              },
+              0,
+            );
+          }
+
+          // Logo hide effect
+          if (logo) {
+            tl.to(
+              logo,
+              {
+                opacity: 0,
+                y: 10,
+                duration: 0.3,
+                ease: "power2.out",
+              },
+              0.1,
+            );
+          }
+
+          // Overlay fade
+          if (overlay) {
+            tl.to(
+              overlay,
+              {
+                opacity: 0.8,
+                duration: 0.4,
+                ease: "power2.out",
+              },
+              0,
+            );
+          }
+        });
+
+        // Mouse leave
+        card.addEventListener("mouseleave", () => {
+          if (!isHovered) return;
+          isHovered = false;
+
+          // Kill any existing tweens
+          gsap.killTweensOf([card, img, logo, overlay]);
+
+          const tl = gsap.timeline();
+
+          // Card return
+          tl.to(card, {
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+
+          // Image return
+          if (img) {
+            tl.to(
+              img,
+              {
+                scale: 1,
+                duration: 0.6,
+                ease: "power2.out",
+              },
+              0,
+            );
+          }
+
+          // Logo show
+          if (logo) {
+            tl.to(
+              logo,
+              {
+                opacity: 0.75,
+                y: 0,
+                duration: 0.4,
+                ease: "power2.out",
+              },
+              0.1,
+            );
+          }
+
+          // Overlay restore
+          if (overlay) {
+            tl.to(
+              overlay,
+              {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out",
+              },
+              0,
+            );
+          }
+        });
+
+        // Parallax scroll effect
+        const direction = index % 2 === 0 ? -20 : 20;
+
+        ScrollTrigger.create({
+          trigger: card,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 2,
+          animation: gsap.fromTo(
+            card,
+            { y: -direction },
+            { y: direction, ease: "none" },
+          ),
+        });
+      });
+    }
+
+    // Contact Form Section Animations
+    const contactSection = document.querySelector(".contact-section");
+    const contactFormCard = document.querySelector(".contact-form-card");
+    const contactFormHeader = document.querySelector(".contact-form-header");
+    const contactHeading = document.querySelector(".contact-heading");
+    const contactInputs = document.querySelectorAll(".contact-input-wrapper");
+    const contactSubmitBtn = document.querySelector(".contact-submit-btn");
+    const contactContent = document.querySelector(".contact-content");
+    const contactMainTitle = document.querySelector(".contact-main-title");
+    const contactMainSubtitle = document.querySelector(
+      ".contact-main-subtitle",
+    );
+
+    if (contactSection) {
+      // Set initial states
+      gsap.set([contactFormCard, contactContent], {
+        opacity: 0,
+        y: 60,
+      });
+
+      gsap.set(contactInputs, {
+        opacity: 0,
+        x: -30,
+      });
+
+      gsap.set(contactSubmitBtn, {
+        opacity: 0,
+        scale: 0.9,
+      });
+
+      // Contact section entrance animation
+      const contactTrigger = ScrollTrigger.create({
+        trigger: contactSection,
+        start: "top 80%",
+        end: "bottom 20%",
+        onEnter: () => {
+          const tl = gsap.timeline();
+
+          // Animate main title and subtitle first
+          tl.fromTo(
+            contactMainTitle,
+            {
+              opacity: 0,
+              y: 50,
+            },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power3.out",
+            },
+          )
+            .fromTo(
+              contactMainSubtitle,
+              {
+                opacity: 0,
+                y: 30,
+              },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power3.out",
+              },
+              "-=0.4",
+            )
+
+            // Animate form card
+            .to(
+              contactFormCard,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power3.out",
+              },
+              "-=0.6",
+            )
+
+            // Stagger form inputs
+            .to(
+              contactInputs,
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: "power2.out",
+              },
+              "-=0.4",
+            )
+
+            // Animate submit button
+            .to(
+              contactSubmitBtn,
+              {
+                opacity: 1,
+                scale: 1,
+                duration: 0.5,
+                ease: "back.out(1.7)",
+              },
+              "-=0.2",
+            );
+        },
+      });
+
+      // Form input focus animations
+      contactInputs.forEach((inputWrapper) => {
+        const input = inputWrapper.querySelector(".contact-input");
+        if (input) {
+          input.addEventListener("focus", () => {
+            gsap.to(inputWrapper, {
+              scale: 1.02,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+
+          input.addEventListener("blur", () => {
+            gsap.to(inputWrapper, {
+              scale: 1,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+        }
+      });
+
+      // Submit button hover animation
+      if (contactSubmitBtn) {
+        contactSubmitBtn.addEventListener("mouseenter", () => {
+          gsap.to(contactSubmitBtn, {
+            scale: 1.05,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        });
+
+        contactSubmitBtn.addEventListener("mouseleave", () => {
+          gsap.to(contactSubmitBtn, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        });
+
+        // Click animation
+        contactSubmitBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+
+          gsap.to(contactSubmitBtn, {
+            scale: 0.95,
+            duration: 0.1,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.to(contactSubmitBtn, {
+                scale: 1,
+                duration: 0.2,
+                ease: "back.out(1.7)",
+              });
+            },
+          });
+
+          // Add pulse effect
+          gsap.fromTo(
+            contactSubmitBtn,
+            {
+              boxShadow: "0 0 0 0 rgba(171, 50, 44, 0.4)",
+            },
+            {
+              boxShadow: "0 0 0 20px rgba(171, 50, 44, 0)",
+              duration: 0.6,
+              ease: "power2.out",
+            },
+          );
+        });
+      }
+
+      // Form card border glow animation
+      if (contactFormCard) {
+        gsap.to(contactFormCard, {
+          boxShadow: "0 0 30px rgba(255, 255, 255, 0.1)",
+          duration: 2,
+          repeat: -1,
+          yoyo: true,
+          ease: "power2.inOut",
+        });
+      }
+    }
+
+    // Cleanup
+    return () => {
+      gsap.killTweensOf("*");
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+
+  // Industries data for carousel
+  const allIndustries = [
+    // Slide 1 - Original Figma industries
+    [
+      {
+        title: "E-commerce & Retail",
+        description:
+          "We are experts in developing online shopping stores, marketplaces, and E-commerce platforms with Flutter that offer real-time inventory management, personalized user dashboard, order tracking, and much more.",
+      },
+      {
+        title: "Automotive",
+        description:
+          "Laravel is an ideal framework for developing high-performance platforms, such as a marketplace for vehicle buying and selling, vehicle tracking, or a rental platform.",
+      },
+      {
+        title: "Healthcare",
+        description:
+          "With Laravel, we develop HIPAA-compliant healthcare platforms that ensure security and performance. Whether it is a custom appointment booking system, a telemedicine portal, an advanced AI diagnostic system, or a real-time patient data dashboard, Laravel can do everything you want.",
+      },
+    ],
+    // Slide 2
+    [
+      {
+        title: "Finance & Banking",
+        description:
+          "We build secure, scalable financial platforms with Laravel, including payment gateways, digital banking solutions, investment platforms, and cryptocurrency exchanges with enterprise-grade security.",
+      },
+      {
+        title: "Education",
+        description:
+          "Create modern e-learning platforms, student management systems, virtual classrooms, and educational content delivery systems that enhance the learning experience with interactive features.",
+      },
+      {
+        title: "Real Estate",
+        description:
+          "Develop comprehensive property management systems, real estate marketplaces, virtual tour platforms, and CRM solutions for the real estate industry with advanced search capabilities.",
+      },
+    ],
+    // Slide 3
+    [
+      {
+        title: "Travel & Tourism",
+        description:
+          "Build booking platforms, travel management systems, tour planning applications, and hospitality management solutions that streamline the travel experience with real-time updates.",
+      },
+      {
+        title: "Media & Entertainment",
+        description:
+          "Create content management systems, streaming platforms, social media applications, and digital asset management solutions for the entertainment industry.",
+      },
+      {
+        title: "Logistics & Supply Chain",
+        description:
+          "Develop tracking systems, inventory management platforms, and supply chain optimization tools that ensure efficient operations and real-time visibility.",
+      },
+    ],
+  ];
+
+  const totalSlides = allIndustries.length;
+
+  return (
+    <div className="min-h-screen bg-[#040404] text-white relative overflow-x-hidden font-montserrat">
+      {/* Hero Section */}
+      <HeroSection
+        onButtonHover={() => {
+          if (overlayRef.current) {
+            gsap.to(overlayRef.current, {
+              width: "100%",
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          }
+        }}
+        onButtonLeave={() => {
+          if (overlayRef.current) {
+            const isSmallScreen = window.innerWidth < 640;
+            const initialWidth = isSmallScreen
+              ? "55px"
+              : window.innerWidth < 1024
+                ? "60px"
+                : "68px";
+            gsap.to(overlayRef.current, {
+              width: initialWidth,
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          }
+        }}
+      />
+
+      {/* Technologies We Use Section */}
+      <FriendsMarquee
+        title="Technologies We Use"
+        subtitle="We leverage cutting-edge technologies and frameworks including Laravel, Vue.js, React, and modern development tools to build powerful, scalable solutions that drive business growth and innovation."
+      />
+
+      {/* What Makes Our Laravel Services Stand Out Section */}
+      <div className="relative z-10 bg-[#040404] px-4 sm:px-6 lg:px-16 xl:px-[75px] py-16 sm:py-20 lg:py-28 xl:py-[110px]">
+        <div className="max-w-7xl xl:max-w-[1440px] mx-auto">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8 sm:gap-12 lg:gap-16 xl:gap-[170px]">
+            {/* Left Column - Heading */}
+            <div className="flex flex-col w-full lg:w-auto lg:max-w-[597px] gap-6 lg:gap-[40px]">
+              <div className="flex flex-col justify-center items-start lg:items-center">
+                <h2 className="font-montserrat text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[49.64px] font-semibold leading-tight lg:leading-normal uppercase text-white">
+                  <span className="text-white">What </span>
+                  <span className="text-white">Makes</span>
+                  <span className="text-white"> </span>
+                  <span className="text-[#AB322C]">Our </span>
+                  <span className="text-white">Laravel </span>
+                  <span className="text-[#AB322C]">Web</span>
+                  <span className="text-white"> </span>
+                  <span className="text-white">Develop</span>
+                  <span className="text-[#AB322C]">ment </span>
+                  <span className="text-white">Services St</span>
+                  <span className="text-[#AB322C]">and Out?</span>
+                </h2>
+              </div>
+            </div>
+
+            {/* Right Column - Content */}
+            <div className="flex flex-col w-full lg:w-auto lg:max-w-[543px] gap-6 lg:gap-[28px]">
+              {/* First Text Block */}
+              <div className="flex items-start gap-4 lg:gap-[16px]">
+                <div className="flex-shrink-0 w-1 h-24 sm:h-32 lg:h-[222px] bg-[#929497]"></div>
+                <div className="flex flex-col justify-center flex-1">
+                  <p className="text-white font-montserrat text-base sm:text-lg lg:text-xl xl:text-[20px] font-normal leading-relaxed lg:leading-[28px]">
+                    As a web development services company, we specialize in
+                    robust and scalable Laravel development, producing
+                    blazing-fast performance, optimized UX, and enterprise-grade
+                    security. Utilizing the latest Laravel features, our
+                    developers tailor modular and API-driven structures designed
+                    for scalability and flexibility.
+                  </p>
+                </div>
+              </div>
+
+              {/* Second Text Block */}
+              <div className="flex items-start gap-4 lg:gap-[16px]">
+                <div className="flex-shrink-0 w-1 h-16 sm:h-20 lg:h-[111px] bg-[#929497]"></div>
+                <div className="flex flex-col justify-center flex-1">
+                  <p className="text-white font-montserrat text-base sm:text-lg lg:text-xl xl:text-[20px] font-normal leading-relaxed lg:leading-[28px]">
+                    Whether you are developing a startup or upgrading legacy
+                    systems, our Laravel solutions enhance business growth and
+                    streamline your digital platforms.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Industries We Cover Section */}
+      <div className="relative z-10 bg-[#040404] px-4 sm:px-6 lg:px-16 xl:px-[70px] py-16 sm:py-20 lg:py-28 xl:py-[110px]">
+        <div className="max-w-7xl xl:max-w-[1300px] mx-auto">
+          {/* Section Title */}
+          <div className="mb-12 lg:mb-[59px]">
+            <h2 className="font-montserrat text-3xl sm:text-4xl md:text-5xl xl:text-[49.64px] font-bold leading-tight uppercase max-w-[1246px]">
+              <span className="text-white">Industries </span>
+              <span className="text-[#AB322C]">WE</span>
+              <span className="text-white"> Cover</span>
+            </h2>
+          </div>
+
+          {/* Carousel Container */}
+          <div className="flex flex-col gap-8 sm:gap-12 lg:gap-[80px]">
+            {/* Industries Carousel */}
+            <div className="relative overflow-hidden">
+              <div
+                // ref={carouselRef}
+                className="flex transition-transform duration-800 ease-out"
+                style={{
+                  width: `${totalSlides * 100}%`,
+                  // transform: `translateX(-${currentSlide * (100 / totalSlides)}%)`,
+                }}
+              >
+                {allIndustries.map((slide, slideIndex) => (
+                  <div
+                    key={slideIndex}
+                    className="w-full flex-shrink-0 px-4 sm:px-6 lg:px-0"
+                    style={{ width: `${100 / totalSlides}%` }}
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-[80px] max-w-[1294px] mx-auto">
+                      {slide.map((industry, index) => (
+                        <div
+                          key={`${slideIndex}-${index}`}
+                          className="flex flex-col gap-4 sm:gap-5 lg:gap-[20px] max-w-full lg:max-w-[370px] mx-auto lg:mx-0"
+                        >
+                          {/* Industry Header */}
+                          <div className="flex items-center gap-3 sm:gap-4 lg:gap-[20px]">
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-[24px] lg:h-[22.704px] bg-[#939498] rounded-[4px] flex-shrink-0"></div>
+                            <h3 className="text-white font-montserrat text-base sm:text-lg lg:text-[20px] font-normal leading-6 sm:leading-7 lg:leading-[28px]">
+                              {industry.title}
+                            </h3>
+                          </div>
+
+                          {/* Industry Description */}
+                          <p className="text-white font-montserrat text-sm sm:text-base lg:text-[20px] font-normal leading-5 sm:leading-6 lg:leading-[28px] max-w-full lg:max-w-[370px]">
+                            {industry.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation Controls */}
+            <div className="flex flex-col items-center gap-4 sm:gap-6">
+              {/* Pagination Dots */}
+              <div className="flex gap-2 sm:gap-4 items-center">
+                {Array.from({ length: totalSlides }).map((_, index) => (
+                  <button
+                    key={index}
+                    // onClick={() => goToSlide(index)}
+                    // className={`w-8 sm:w-12 h-1 rounded transition-all duration-300 ${
+                    //   index === currentSlide
+                    //     ? "bg-[#F2F2F2]"
+                    //     : "bg-[rgba(148,148,148,0.8)] hover:bg-[rgba(148,148,148,1)]"
+                    // }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Navigation Arrows */}
+              <div className="flex items-center gap-4 sm:gap-6">
+                <button
+                  // onClick={prevSlide}
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#939498] flex items-center justify-center text-white hover:bg-[#AB322C] hover:border-[#AB322C] transition-all duration-300 active:scale-95"
+                  aria-label="Previous slide"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    className="sm:w-5 sm:h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M15 18L9 12L15 6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+
+                <span className="text-white font-montserrat text-sm sm:text-base">
+                  {/* {currentSlide + 1} / {totalSlides} */}
+                </span>
+
+                <button
+                  // onClick={nextSlide}
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[#939498] flex items-center justify-center text-white hover:bg-[#AB322C] hover:border-[#AB322C] transition-all duration-300 active:scale-95"
+                  aria-label="Next slide"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    className="sm:w-5 sm:h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* MERN Stack Services Sticky Scroll Section */}
+      <div className="mern-services-section bg-[#040404] relative min-h-[200vh] sm:min-h-[250vh] lg:min-h-[300vh]">
+        <div className="sticky-wrapper relative px-4 sm:px-6 lg:px-16 xl:px-[70px]">
+          <div className="w-full pt-8 sm:pt-16 lg:pt-28">
+            <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8 sm:gap-12 lg:gap-20">
+              {/* Left Side - Sticky Content */}
+              <div className="mern-sticky-content w-full lg:w-1/2 h-auto lg:h-screen flex items-center justify-center lg:justify-start">
+                <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 w-full text-center lg:text-left">
+                  {/* Title */}
+                  <div className="flex flex-col justify-center items-center lg:items-start">
+                    <h2 className="font-montserrat text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[49.64px] font-bold leading-tight uppercase">
+                      <span className="text-white">Explore </span>
+                      <span className="text-[#AB322C]">W</span>
+                      <span className="text-white">hat Else We Offer </span>
+                      <span className="text-[#AB322C]">In </span>
+                      <span className="text-white">Mernst</span>
+                      <span className="text-[#AB322C]">ack </span>
+                      <span className="text-white">Develop</span>
+                      <span className="text-[#AB322C]">ment </span>
+                      <span className="text-white">Services</span>
+                    </h2>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side - Scrolling Content */}
+              <div className="mern-scroll-content w-full lg:w-1/2 relative flex items-start justify-center">
+                <div className="flex flex-col space-y-[30vh] sm:space-y-[35vh] lg:space-y-[40vh] pb-[50vh] w-full max-w-md">
+                  {/* Service Item 1 - Custom Web Application Development */}
+                  <div className="mern-service-item flex items-center justify-center lg:justify-start min-h-[40vh] sm:min-h-[45vh] lg:min-h-[50vh]">
+                    <div className="flex flex-col gap-3 sm:gap-4 w-full text-center lg:text-left">
+                      <div className="flex items-start gap-4 sm:gap-6 justify-center lg:justify-start">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-400 rounded-sm flex-shrink-0 mt-1"></div>
+                        <h3 className="text-white font-montserrat text-base sm:text-lg lg:text-xl font-semibold leading-6 sm:leading-7">
+                          Custom Web Application Development
+                        </h3>
+                      </div>
+                      <p className="text-white font-montserrat text-sm sm:text-lg lg:text-xl leading-6 sm:leading-7 max-w-full">
+                        Whether it's a SaaS platform, enterprise dashboard, or
+                        content management system, we deliver high-performing
+                        solutions.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Service Item 2 - MERN-Based Progressive Web Apps */}
+                  <div className="mern-service-item flex items-center justify-center lg:justify-start min-h-[40vh] sm:min-h-[45vh] lg:min-h-[50vh]">
+                    <div className="flex flex-col gap-3 sm:gap-4 w-full text-center lg:text-left">
+                      <div className="flex items-start gap-4 sm:gap-6 justify-center lg:justify-start">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-400 rounded-sm flex-shrink-0 mt-1"></div>
+                        <h3 className="text-white font-montserrat text-base sm:text-lg lg:text-xl font-semibold leading-6 sm:leading-7">
+                          MERN-Based Progressive Web Apps (PWAs)
+                        </h3>
+                      </div>
+                      <p className="text-white font-montserrat text-sm sm:text-lg lg:text-xl leading-6 sm:leading-7 max-w-full">
+                        Build mobile-like web apps with our PWA solutions. We
+                        use React.js for the frontend and Node.js on the backend
+                        to craft swift, installable, and offline-ready
+                        applications.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Service Item 3 - AI & Real-Time App Integration */}
+                  <div className="mern-service-item flex items-center justify-center lg:justify-start min-h-[40vh] sm:min-h-[45vh] lg:min-h-[50vh]">
+                    <div className="flex flex-col gap-3 sm:gap-4 w-full text-center lg:text-left">
+                      <div className="flex items-start gap-4 sm:gap-6 justify-center lg:justify-start">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-400 rounded-sm flex-shrink-0 mt-1"></div>
+                        <h3 className="text-white font-montserrat text-base sm:text-lg lg:text-xl font-semibold leading-6 sm:leading-7">
+                          AI & Real-Time App Integration
+                        </h3>
+                      </div>
+                      <p className="text-white font-montserrat text-sm sm:text-lg lg:text-xl leading-6 sm:leading-7 max-w-full">
+                        Leverage the real strength of real-time with MERN. We
+                        are experts at developing live chat features and
+                        real-time dashboards.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Service Item 4 - Cloud-Native MERN Applications */}
+                  <div className="mern-service-item flex items-center justify-center lg:justify-start min-h-[40vh] sm:min-h-[45vh] lg:min-h-[50vh]">
+                    <div className="flex flex-col gap-3 sm:gap-4 w-full text-center lg:text-left">
+                      <div className="flex items-start gap-4 sm:gap-6 justify-center lg:justify-start">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-400 rounded-sm flex-shrink-0 mt-1"></div>
+                        <h3 className="text-white font-montserrat text-base sm:text-lg lg:text-xl font-semibold leading-6 sm:leading-7">
+                          Cloud-Native MERN Applications
+                        </h3>
+                      </div>
+                      <p className="text-white font-montserrat text-sm sm:text-lg lg:text-xl leading-6 sm:leading-7 max-w-full">
+                        We develop installable MERN stack apps optimized for
+                        deployment on Azure, AWS, or Google Cloud. Our solutions
+                        are designed with containerization and CI/CD pipelines
+                        to guarantee performance, flexibility, and easy scaling.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Service Item 5 - API-First Architecture & Microservices */}
+                  <div className="mern-service-item flex items-center justify-center lg:justify-start min-h-[40vh] sm:min-h-[45vh] lg:min-h-[50vh]">
+                    <div className="flex flex-col gap-3 sm:gap-4 w-full text-center lg:text-left">
+                      <div className="flex items-start gap-4 sm:gap-6 justify-center lg:justify-start">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-400 rounded-sm flex-shrink-0 mt-1"></div>
+                        <h3 className="text-white font-montserrat text-base sm:text-lg lg:text-xl font-semibold leading-6 sm:leading-7">
+                          API-First Architecture & Microservices
+                        </h3>
+                      </div>
+                      <p className="text-white font-montserrat text-sm sm:text-lg lg:text-xl leading-6 sm:leading-7 max-w-full">
+                        We are experts at building RESTful and GraphQL APIs
+                        using Express and Node.js, fostering easy integration
+                        and seamless multi-platform support.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Case Studies Section */}
+      <div className="case-studies-section bg-[#040404] relative py-16 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-16 xl:px-20 overflow-hidden">
+        <div className="w-full max-w-7xl mx-auto">
+          {/* Section Title */}
+          <div className="case-studies-title flex justify-center mb-10 lg:mb-16">
+            <h2 className="font-montserrat text-3xl sm:text-4xl lg:text-5xl xl:text-[40px] font-bold text-white uppercase text-center">
+              TOP CASE STUDIES
+            </h2>
+          </div>
+
+          {/* Case Studies Grid */}
+          <div className="case-studies-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 w-full">
+            {/* Row 1 - Three Equal Cards */}
+            <div className="case-study-card relative h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/bd2aa3984134f27662ec435c50b9cafd9373e6b1?width=845"
+                alt="Belgrade Liquor Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/38bdec27a8baa8114d5a887f6741998700015c3c?width=244"
+                  alt="Belgrade Liquor Logo"
+                  className="w-20 sm:w-24 h-auto"
+                />
+              </div>
+            </div>
+
+            <div className="case-study-card relative h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/ceeb5d40614cc139f3aaacdc562337f1eecaea59?width=845"
+                alt="Premiere Baby Imaging Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/eaea5cb64cbc198c15c6a0c081c15594a46e0070?width=320"
+                  alt="Premiere Baby Imaging Logo"
+                  className="w-24 sm:w-32 h-auto"
+                />
+              </div>
+            </div>
+
+            <div className="case-study-card relative h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/0cc311e235d624b2db9eb6b6ea868c0a5f9d723e?width=845"
+                alt="Trail Trailer Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <svg
+                  className="w-24 sm:w-32 h-auto"
+                  width="161"
+                  height="106"
+                  viewBox="0 0 161 106"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clipPath="url(#clip0_3009_12215)">
+                    <path
+                      d="M0.978333 0.591064V105.527H160.978V0.591064H0.978333ZM155.361 100.105L155.328 100.138H6.66113V6.01258H155.361V100.105ZM66.0365 36.3208C66.0365 37.7578 65.1547 38.5417 63.587 38.5417H61.4968V34.0999H63.587C65.1547 34.0999 66.0365 34.8838 66.0365 36.3208ZM144.779 16.3984H17.1449V61.1095H144.779V16.3984ZM44.5791 49.3194H37.3939V38.5417H44.5791V49.3194ZM50.5885 35.0797H37.3939H31.3845V28.5805H50.5885V35.0797ZM65.7426 49.3194L63.2931 43.7999H61.5948V49.3194H54.475V28.5805H64.7301C69.9883 28.5805 73.189 31.4872 73.189 36.1902C73.189 40.8932 72.0786 41.0891 70.1516 42.3955L73.6136 49.3194H65.7426ZM91.0212 49.3194H90.9885L90.0741 46.7393H83.9994L83.0849 49.3194H75.6058L83.3135 28.5805H90.7926L98.5329 49.3194H91.0212ZM109.409 49.3194H102.223V28.5805H109.409V49.3194ZM129.952 49.3194H114.895V28.5805H122.081V42.7874H129.952V49.3194ZM87.102 36.3208L88.931 42.0036H85.1751L86.9714 36.3208H87.102ZM56.8591 76.329C56.8591 71.626 53.6585 68.7193 48.4003 68.7193H38.1451V89.4582H45.2649V83.9387H46.9632L49.4127 89.4582H57.2837L53.8218 82.5343C55.7487 81.2279 56.8591 81.032 56.8591 76.329ZM47.2572 78.6805H45.1669V74.2387H47.2572C48.8248 74.2387 49.7066 75.0226 49.7066 76.4596C49.7066 77.8966 48.8248 78.6805 47.2572 78.6805ZM65.22 68.7193L57.5123 89.4582H64.9914L65.9059 86.8781H71.9806L72.8951 89.4582H80.4068L72.6664 68.7193H65.22ZM67.049 82.1424L68.8452 76.4596H68.9759L70.8048 82.1424H67.049ZM81.7458 68.7193H88.931V89.4582H81.7458V68.7193ZM99.2188 82.9262H107.09V89.4908H92.0336V68.7193H99.2188V82.9262ZM116.071 84.0367H124.334V89.4255H109.115V68.7193H124.04V74.0101H116.071V76.3943H123.256V81.5545H116.071V84.0367ZM145.465 76.329C145.465 71.626 142.264 68.7193 137.006 68.7193H126.751V89.4582H133.871V83.9387H135.569L138.019 89.4582H145.89L142.428 82.5343C144.355 81.2279 145.465 81.032 145.465 76.329ZM135.863 78.6805H133.773V74.2387H135.863C137.431 74.2387 138.312 75.0226 138.312 76.4596C138.312 77.8966 137.431 78.6805 135.863 78.6805ZM36.0222 75.2185H16.8183V68.7167H36.0222V75.2185Z"
+                      fill="white"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_3009_12215">
+                      <rect
+                        width="160"
+                        height="104.936"
+                        fill="white"
+                        transform="translate(0.978333 0.591064)"
+                      />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+
+            {/* Row 2 - Two Wide Cards */}
+            <div className="case-study-card relative sm:col-span-2 lg:col-span-1 h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform lg:col-start-1 lg:row-start-2">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/8a3c75dbeb6dc468ea8105c68e3acaf448e30489?width=1302"
+                alt="Revel Roll Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/babaa53b5bce10a36be352f0bac1b01d77d379d6?width=225"
+                  alt="Revel Roll Logo"
+                  className="w-20 sm:w-24 h-auto"
+                />
+              </div>
+            </div>
+
+            <div className="case-study-card relative sm:col-span-2 lg:col-span-2 h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform lg:col-start-2 lg:row-start-2">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/1dc984d67df91c495f03f3d258caa97b6713d657?width=1302"
+                alt="Dressage Adventures Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/dc9ac8d94fcd10ffdd229946ef09c8d3e43cadf3?width=320"
+                  alt="Dressage Adventures Logo"
+                  className="w-24 sm:w-32 h-auto"
+                />
+              </div>
+            </div>
+
+            {/* Row 3 - Three Equal Cards */}
+            <div className="case-study-card relative h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/409c667a498b45ad5088f8399f567fc47be9355a?width=845"
+                alt="Thought Gym Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/d7f738bdf192f19169b7cb60ec50b9d6cea1d5ec?width=320"
+                  alt="Thought Gym Logo"
+                  className="w-24 sm:w-32 h-auto"
+                />
+              </div>
+            </div>
+
+            <div className="case-study-card relative h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/3f50b55abfa482c41801320117395958b3b84499?width=845"
+                alt="NCCS Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/6607ab653c4735d46be2ec54c98429e821a422d0?width=320"
+                  alt="NCCS Logo"
+                  className="w-24 sm:w-32 h-auto"
+                />
+              </div>
+            </div>
+
+            <div className="case-study-card relative h-[240px] sm:h-[280px] md:h-[320px] lg:h-[352px] rounded-2xl overflow-hidden cursor-pointer will-change-transform">
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/9f87c17538bce5b5c6434135254711b902a360f1?width=845"
+                alt="Crafted Copper Case Study"
+                className="absolute inset-0 w-full h-full object-cover will-change-transform"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 opacity-75 pointer-events-none will-change-transform">
+                <img
+                  src="https://api.builder.io/api/v1/image/assets/TEMP/edd80e80c4881b9694b58d22abee4f95bba1e41d?width=224"
+                  alt="Crafted Copper Logo"
+                  className="w-20 sm:w-24 h-auto"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Form Section - Exact Figma Design */}
+      {/* What Makes Our Laravel Services Stand Out Section */}
+      <ServicesSection />
+
+      {/* Industries We Cover Section */}
+      <IndustriesSection />
+
+      {/* MERN Stack Services Sticky Scroll Section */}
+      <MernServicesSection />
+
+      {/* Top Case Studies Section */}
+      <CaseStudiesSection />
+
+      {/* Contact Form Section */}
+      <ContactSection />
+    </div>
+  );
+}
